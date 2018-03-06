@@ -1,0 +1,19 @@
+<p>
+ 
+  <span class="badge badge-warning">Warning</span>
+</p>
+
+
+<form>
+  <mat-form-field>
+    <mat-select placeholder="Exprecion Regular" [(ngModel)]="selectedValue" (change)="Showvalor()" name="list">
+      <mat-option *ngFor="let list of lists" [value]="list.value" >
+        {{list.viewValue}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <p> Selected value: {{selectedValue}} </p>
+  <p> inter : {{v}} </p>
+  
+</form>
