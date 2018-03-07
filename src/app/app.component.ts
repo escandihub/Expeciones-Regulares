@@ -38,7 +38,9 @@ lists = [
   {value: 12, viewValue: "(a,b)*·0000b"},
   {value: 13, viewValue: "(a*)·b(bb)*"},
   {value: 14, viewValue: "a*·(ca/ac)"},
-  {value: 15, viewValue: "a*·(ca/ac)"},
+  {value: 15, viewValue: "(a,b)*·000b0"},
+  {value: 16, viewValue: "(a,b)+· (a/b)+ "},
+  {value: 17, viewValue: "(c ·(cc)*)·(b·(bb)*)"},
 ];
 
 texts = [
@@ -72,7 +74,7 @@ selectText(){
     }
   
     case 2:{
-    this.texto = "Cualquier secuencia de a's y b's siempre que no hay dos a's o dos b's "
+    this.texto = "Cualquier secuencia de a's y b's siempre que no hay dos a's o dos b's juntas"
       break;
     }
     case 3:{
@@ -122,7 +124,19 @@ selectText(){
       case 14:{
         this.texto = "Cualquier secuencia de a's tal que solo hay una c, en cualquier posicion"
           break;
-        }       
+        }
+        case 15:{
+          this.texto = "Cualquier secuencia de a's y b's siempre que el penultimo caracter sea b"
+            break;
+          }
+          case 16:{
+            this.texto = "Cualquier secuencia de a's y b's siempre que el numero total de caracteres sea par"
+              break;
+            }
+            case 17:{
+              this.texto = "Un numero impar de c y un numero impar de b"
+                break;
+              }       
     default: {
       break;
     }
@@ -187,6 +201,18 @@ selectFuncion(){
       this.problema14();
       break;
     }
+    case 15:{
+      this.problema15();
+      break;
+    }
+    case 16:{
+      this.problema16();
+      break;
+    }
+    case 17:{
+      this.problema17();
+      break;
+    }
     default:{
       break;
     }
@@ -205,38 +231,39 @@ arreglo(){
 
   problema01(){
     let ex = this.arreglo();
-    let a:boolean
-    let x = 0
+    let soloAyB = this.soloAB('a', 'b')
+    let antes:boolean
+    let posA
+    let posB
+    let a:boolean  
     let xa:boolean
     let aa:boolean
-    for(let i = 0; i < ex.length; i++){
-      if(ex[i] == 'a' || ex[i] == 'b' ){
-        a = true
+    
+
+    for(let i = ex.length-2; i < ex.length; i++){
+      if(ex[i] == 'a'){
+       xa = true
       }else{
-        a = false
+        xa = false
       }
     }
+    
+//buscar antes de a - b //busca
 
     for(let i = 0; i < ex.length-2; i++){
-      if(ex[i] == 'a'){
-        x++
-      }
+        if(ex[i] == 'a'){
+          posA = i
+        }if(ex[i] == 'b'){
+          posB = i
+        }
     }
-    if(ex[x] == 'b'){
-      xa = true
+    if(posA < posB){
+      antes = true
     }else{
-      xa = false
+      antes = false
     }
-
-    
-    
-        if(ex[ex.length-1] == "a" && ex[ex.length-2] == "a"){
-          aa = true 
-        }else{
-          aa = false
-      }
-
-      if(a == true && aa == true && xa == true){
+//----------------------
+      if(soloAyB == true && xa == true && antes == true){
         this.error = false        
         this.boton = this.btnOk
       }else{
@@ -246,13 +273,19 @@ arreglo(){
       
       console.log(this.error)
   }
+
+  
   
   problema02(){ //se cicla 
     let ex = this.arreglo();
-
+    let primero:boolean
+    if(ex[0] == 'a'){
+      primero = true
+    }else{
+      primero = false
+    }
     for(let i = 0; i < ex.length; i+=2){
-      console.log(i)
-      if(ex[i] == 'a' && ex[i+1] == 'b' || ex[i] == 'b' && ex[i+1] == 'a' ){ // abab
+      if(ex[i] == 'a' && ex[i+1] == 'b' && primero == true){ 
           this.error = false 
           this.boton = this.btnOk
       }else{
@@ -267,9 +300,37 @@ arreglo(){
     let ex = this.arreglo()
     let a = this.impar('a')
     let  b = this.impar('b')
-    let c = this.buscar('c')
+    let c = this.buscarCantidad('c', 1)
+    let antes = this.buscarAntes('a', 'c')
+    let mic = 0
+    let miac = 0
+    let error = 0
+    let so:boolean
+    let soloa:boolean
+    if(ex[0] == 'a'){
+      soloa = true
+    }else{
+      soloa = false
+    }
+    for(let i = 0; i < ex.length; i++){
+      if(ex[i] == 'c'){
+        mic++
+      }
+      if(ex[i] == 'a' || ex[i] =='b'){
+        miac++
+      }else{
+        error++
+      }
+    }
 
-    if( a == true && c == true && b == true){
+    if(mic == 1 && miac > 0 && error == 1 && soloa == true){
+      so = true
+    }else{
+      so = false
+    }
+
+
+    if( a == true && c == true && b == true && antes == true && so == true){
       this.error = false
       this.boton = this.btnOk
     }else{
@@ -284,19 +345,22 @@ arreglo(){
   }
 
   problema04(){
-    let a = this.buscar('a')
+    let antes = this.buscarAntes('a', 'b')
+    let a = this.soloAB('a', 'b')
     let imparb = this.impar('b')
 
-    if(a == true && imparb == true){
+    if(a == true && imparb == true && antes == true){
       this.error = false
+      this.boton = this.btnOk
     }else{
       this.error = true
+      this.boton = this.btnNO
     }
     console.log(this.error)
   }
 
-  problema05(){
-    let b = this.buscar('b')
+  problema05(){ ///waiting 
+    let b = this.soloAB('b', 'a')
     let a = this.buscarCantidad('a', 1)
 
     if(b == true && a == true ){
@@ -309,10 +373,10 @@ arreglo(){
     console.log(this.error)
   }
 
-  problema06(){
+  problema06(){//soy chido
     let a = this.buscarCantidad('a', 0)
     let b = this.buscar('b')
-    let ok = this.buscarAntes('a', 'b')
+    let ok = this.buscarSeguidaAydespuesno('a', 'b')
 
     if((a == true && b == true || ok == true)){
       this.error = false
@@ -327,9 +391,10 @@ arreglo(){
 
   ///////////////////////////////////hoja 2 
 
-  problema07(){
+  problema07(){//verificar a y b 
     let a = this.buscarAntesTerminar('a', 4)
     let b = this.buscarAntesTerminar('b', 4)
+    let ab = this.soloAB('a','b')
     let es:boolean
     let ex = this.arreglo()
 
@@ -344,7 +409,7 @@ arreglo(){
 
     if(a == true || b == true ){
       this.error = false
-    }if(es == true){
+    }if(es == true && ab == true){
       this.error = false
       this.boton = this.btnOk
     }else{
@@ -355,8 +420,9 @@ arreglo(){
     
   }
 
-  problema08(){
+  problema08(){ // revisar que solo existan a y bs 
     let a = this.buscasApartir('a', 'b', 0)
+    let ab = this.soloAB('a', 'b')
     let es:boolean
     let ex = this.arreglo()
 
@@ -367,7 +433,7 @@ arreglo(){
       }
     }
 
-    if(a == true && es == true){
+    if(a == true && es == true && ab == true){
         this.error = false
         this.boton = this.btnOk
       
@@ -379,15 +445,16 @@ arreglo(){
     
   }
 
-problema09(){
+problema09(){//error puedo pones =! a and != b
     let a = this.buscar('a')
     let b = this.buscar('b')
+    let ab = this.soloAB('a', 'b')
     let total = this.total(5)
 
     if(a == true || b == true){
       this.error = false
     }
-    if(total == true){
+    if(total == true && ab == true){
       this.error = false
       this.boton = this.btnOk
     }else{
@@ -400,23 +467,13 @@ problema09(){
 
 problema10(){///reparado checar otros del a o b
   let b = this.impar('b')
+  let limite = this.buscarSeguidaAydespuesno('a', 'b')
+  let solo = this.soloAB('a', 'b')
   let es:boolean
   let A:boolean
 
   let ex = this.arreglo()
-
-  for(let i = 0; i < ex.length; i++){
-    if(ex[i] == 'a' || ex[i] == 'b'){
-      es = true
-    }else{
-      es = false
-    }    
-  }
-  if(ex[0] == 'a'){
-    A = true
-  }
-
-  if(b == true && es == true && A == true){
+  if(b == true && solo == true && limite == true){
     this.error = false
     this.boton = this.btnOk
   }else{
@@ -428,13 +485,13 @@ console.log(this.error);
 
 }
 
-problema11(){
+problema11(){//error puedo pones =! a and != b
  let ab = this.buscasApartir('a', 'b', 3)
  let es:boolean
  let ex = this.arreglo()
 
  for(let i = 0; i < 4; i++){
-   if(ex[i] == 'a' && ex[i+1] == 'b' && ex[i+2] == 'b' && ex[i+3] == 'a'){        
+   if(ex[i] == 'a' && ex[i+1] == 'b' && ex[i+2] == 'b' && ex[i+3] == 'a' && ex[0] == 'a'){        
      es = true
      break;
    }else{
@@ -455,7 +512,7 @@ problema11(){
 }
 
 problema12(){
-  let a = this.buscasApartir('a', 'b', 0)
+  let a = this.soloAB('a', 'b')
     let es:boolean
     let ex = this.arreglo()
 
@@ -480,44 +537,144 @@ problema12(){
 
 problema13(){
   let b = this.impar('b')
+  let ab = this.ceroOmasLetras('a', 'b')
   let es:boolean
   
   let ex = this.arreglo()
-
+/*
   for(let i = 0; i < ex.length; i++){
-    if(ex[i] == 'a' || ex[i] == 'b'){
+    if(ex[i] == 'a' ){
       es = true
     }else{
       es = false
     }
-  }
+  } */
 
-  if(b == true && es == true){
+  if(b == true  && ab == true){
     this.error = false
     this.boton = this.btnOk
   }else{
     this.error = true
     this.boton = this.btnNO
   }
-  
+console.log(ab);
+
 console.log(this.error);
 }
 
 problema14(){
-  let a = this.buscasApartir('a', 'c', 0)
-    let c = this.buscarCantidad('c', 1)
+  let c = this.buscarCantidad('c', 1)
+  let soloAyC = this.soloAB('a', 'c')
 
 
-    if(a == true && c == true ){
+    if( c == true && soloAyC == true){
         this.error = false
+        this.boton = this.btnOk
     }else{
       this.error = true 
+      this.boton = this.btnNO
     }
-    console.log(a);
-    console.log(c);
     
     
     console.log(this.error)
+}
+
+//aqui es otra hoja 
+problema15(){/// duda 
+  let soloAyC = this.soloAB('a', 'b')
+  let bP = this.buscarAntesTerminar('b', 2)
+  let ex = this.arreglo()
+  let penul:boolean
+//secuancia de a's y b's
+    let  hay:boolean
+    let sololetra
+    for(let i = 0; i < ex.length-2; i++){
+        if(ex[i] == 'a'){
+          sololetra = i
+        }else{
+          break;
+        }
+      }//console.log(sololetra+1);
+      
+      for(let i = sololetra+1; i < ex.length-1; i++ ){
+        //console.log(ex[i]);
+        
+        if(ex[i] == 'b'){
+          
+          hay = true
+        }else{
+          hay = false
+        }
+      }
+//-----------------------
+
+  if(ex[ex.length-1] == 'a' && soloAyC == true && bP == true && hay == true) {
+    this.error = false
+    this.boton = this.btnOk
+  }else{
+    this.error = true 
+    this.boton = this.btnNO
+  }
+  
+console.log(this.error);
+
+}
+
+problema16(){// cualquier a y b que el numero total se par 
+  let soloAyC = this.soloAB('a', 'b')
+  let primero = this.Ay0('a')
+  let ab = this.buscarSeguidaAydespuesno('a', 'b')
+  let es:boolean
+  let ex = this.arreglo();
+  if(ex.length%2 == 0){
+        es = true
+      }else{
+        es = false
+      }
+
+      if(soloAyC == true && primero == true && ab == true && es == true ){
+        this.error = false 
+        this.boton = this.btnOk
+      }else{
+        this.error = true 
+        this.boton = this.btnNO
+      }
+
+}
+
+problema17(){
+  let c = this.impar('c')
+  let  b = this.impar('b')
+  let solo = this.soloAB('c', 'b')
+  let antes = this.buscarAntes('c', 'b')
+
+  if( c == true && b == true && antes == true){
+    this.error = false
+    this.boton = this.btnOk
+  }else{
+    this.error = true 
+    this.boton = this.btnNO
+  }
+}
+
+soloAB(letra1:string, letra2:string){
+  let es:boolean
+  let ex = this.arreglo()
+  let con = 0
+  let nope = 0
+  for(let i = 0; i < ex.length; i++){
+    if(ex[i] == letra1 || ex[i] == letra2){
+        con++
+    }else{
+      nope++
+    }
+  }
+  if(nope == 0 && con > 1){
+   es = true 
+  }else{
+    es = false
+  }
+  return  es
 }
 
 buscasApartir(a:string, b:string, posicion:number){
@@ -539,7 +696,7 @@ total(full:number){
     let es:boolean
     let ex = this.arreglo()
 
-    if(ex.length == 5){
+    if(ex.length == full){
       es = true
     }else{
       es = false
@@ -570,7 +727,7 @@ total(full:number){
   buscarAntesTerminar(letter:string, antes:number){
     let ex = this.arreglo()
     let ok:boolean
-    for(let i = 0; i < ex.length-antes; i++){
+    for(let i = 0; i <= ex.length-antes; i++){
       if(ex[i] == letter){
         ok = true
       }else{
@@ -592,7 +749,7 @@ total(full:number){
           posB = i
         }
     }
-    if(posA < posB){
+    if(posA == posB-1){
       antes = true
     }else{
       antes = false
@@ -629,9 +786,62 @@ total(full:number){
     }
     return hay
   }
- 
 
+  buscarSeguidaAydespuesno(a:string, b:string){
+    let ex = this.arreglo()
+    let  hay:boolean
+    let sololetra
+    for(let i = 0; i < ex.length; i++){
+        if(ex[i] == a){
+          sololetra = i
+        }else{
+          break;
+        }
+      }
+      for(let i = sololetra+1; i < ex.length; i++ ){
+        if(ex[i] == b){
+          hay = true
+        }else{
+          hay = false
+        }
+      }
+      return hay
+}
 
+ceroOmasLetras(a:string, b:string){
+  let es:boolean
+  let ex = this.arreglo()
+  let con = 0
+  let nope = 0
+
+  for(let i = 0; i < ex.length; i++){
+    if(ex[i] == a || ex[i] == b){
+        con++ 
+    }else{
+      nope++
+    }
+  }
+  if(nope == 0 && con > 0){
+   es = true
+   
+  
+  }else{
+    es = false
+  }
+  return  es
+  
+}
+
+Ay0(a:string){
+  let ex = this.arreglo(); 
+  let primero:boolean
+  if(ex[0] == a){
+    primero = true
+  }else{
+    primero = false
+  }
+return primero
+}
   
   
 }
